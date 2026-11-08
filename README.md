@@ -32,7 +32,7 @@ Abra o terminal na pasta raiz do projeto e execute o comando do Maven Wrapper:
 .\mvnw clean spring-boot:run
 
 3. Acessando:
-Assim que o terminal exibir que o sistema iniciou, abra o seu navegador e acesse http://localhost:8080 para ver a tela de login.
+Assim que o terminal exibir que o sistema iniciou, abra o seu navegador e acesse (link) para ver a tela de login.
 
 - Nossa Equipe
 
