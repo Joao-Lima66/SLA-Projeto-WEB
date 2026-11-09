@@ -1,43 +1,49 @@
-- Sistema de Localização Acadêmica (SLA)
+Sistema de Localização Acadêmica (SLA)
 
-Este é o Sistema de Localização Acadêmica, um projeto prático desenvolvido para a faculdade com o objetivo de facilitar o gerenciamento de alocação de salas, professores e disciplinas. Construímos a aplicação seguindo a arquitetura MVC (Model-View-Controller), garantindo que a interface do usuário, as regras de negócio e o banco de dados ficassem muito bem separados e organizados.
+Sobre o projeto
 
-- Tecnologias que usamos
+O Sistema de Localização Acadêmica (SLA) é uma aplicação web desenvolvida com o objetivo de facilitar o acesso às informações acadêmicas de uma instituição de ensino.
 
-O sistema foi todo programado em Java 17 utilizando o framework Spring Boot na versão 3.3.5. 
+O sistema permite que alunos e professores acessem informações relacionadas às disciplinas, horários e localização das salas, tornando mais simples a consulta dessas informações no ambiente acadêmico.
 
-Para a interface visual, escolhemos o JSF (JavaServer Faces) integrado através do JoinFaces. O armazenamento dos dados é feito no MySQL, e a comunicação direta do Java com o banco de dados foi construída com Spring Data JDBC (usando JdbcTemplate). Todo o gerenciamento de dependências do projeto é feito pelo Maven.
+O projeto foi desenvolvido como trabalho acadêmico, utilizando conceitos de programação Java, integração com banco de dados e desenvolvimento web.
 
-- Como a nossa arquitetura funciona
+Funcionalidades
 
-O código está estruturado em camadas claras e com responsabilidades únicas:
+- Login de usuários no sistema.
+- Identificação dos usuários de acordo com seus perfis.
+- Painel de consulta para alunos.
+- Painel de consulta para professores.
+- Consulta de disciplinas e horários.
+- Visualização das informações de alocação de salas.
+- Diferenciação entre salas de aulas teóricas e laboratórios para atividades práticas no painel do professor.
 
-A camada Model abriga as classes como Usuario, Sala, Disciplina e Alocacao, que são o espelho exato das nossas tabelas do banco de dados dentro do Java.
+Tecnologias utilizadas
 
-O DAO (Data Access Object) é quem faz o trabalho de executar os comandos SQL diretamente no MySQL e converter as respostas brutas em objetos que o sistema entenda.
+- Java 21: linguagem utilizada no desenvolvimento.
+- Spring Boot: estrutura principal da aplicação.
+- Maven: gerenciamento de dependências e construção do projeto.
+- JSF (JavaServer Faces): desenvolvimento das páginas e interfaces.
+- JDBC: comunicação entre a aplicação e o banco de dados.
+- MySQL: gerenciamento e armazenamento dos dados.
+- HTML e XHTML: estruturação das páginas do sistema.
 
-A camada Service funciona como a gerente das regras de negócio, validando ações como o login e coordenando os pedidos antes de enviá-los ao DAO.
+Organização dos pacotes
 
-Os Controllers (nossos Beans) recebem as ações e cliques das telas, processam o que o usuário pediu e devolvem a resposta visual correta.
+- controller: contém as classes responsáveis por controlar as ações e interações das páginas.
+- dao: contém as classes responsáveis pelo acesso e pelas consultas ao banco de dados.
+- model: contém as classes que representam os dados do sistema, como Usuário, Perfil, Sala, Disciplina e Alocação.
+- service: contém as regras de negócio da aplicação.
+- SlaApplication: classe principal responsável por iniciar o Spring Boot.
 
-A View reúne as nossas telas interativas, todas construídas no formato .xhtml.
+Banco de dados
 
-- Passo a passo para rodar o projeto
+O sistema utiliza um banco de dados MySQL para armazenar as informações necessárias ao funcionamento da aplicação.
 
-1. Configurando o Banco de Dados:
-Abra o seu gerenciador do MySQL, como o MySQL Workbench. Importe e rode o arquivo script_banco.sql que está na pasta principal do nosso projeto. Isso vai criar o banco sla_db e inserir os dados iniciais. Se o seu servidor MySQL usar senha, lembre-se de colocá-la no arquivo application.properties (dentro da pasta src/main/resources), preenchendo a linha spring.datasource.password.
+As principais tabelas são:
 
-2. Ligando a Aplicação:
-Abra o terminal na pasta raiz do projeto e execute o comando do Maven Wrapper:
-.\mvnw clean spring-boot:run
-
-3. Acessando:
-Assim que o terminal exibir que o sistema iniciou, abra o seu navegador e acesse (link) para ver a tela de login.
-
-- Nossa Equipe
-
-João Guilherme: Desenvolvimento do Backend (Classes DAO, Service e Model) e configuração inicial da estrutura do Spring Boot.
-
-Guilherme Almeida: Criação e modelagem do banco de dados no MySQL e desenvolvimento do script de inicialização, e o desenvolvimento das telas Frontend em JSF e integração da interface visual com o backend.
-
-Anna Beatriz: Documentação do projeto, testes de integração e auxílio na configuração do ambiente de desenvolvimento.
+- "perfil": armazena os tipos de perfil dos usuários.
+- "usuario": armazena os dados dos usuários.
+- "sala": armazena as informações das salas e laboratórios.
+- "disciplina": armazena as disciplinas cadastradas.
+- "alocacao": relaciona usuários, disciplinas, salas e horários.
