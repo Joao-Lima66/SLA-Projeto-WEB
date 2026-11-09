@@ -1,51 +1,139 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
-
+      xmlns:p="http://primefaces.org/ui">
 <h:head>
-    <title>SLA - Painel do Professor</title>
+    <title>Painel do Professor - SLA</title>
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .top-bar {
+            background-color: #0f172a;
+            color: #ffffff;
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .top-bar h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .container {
+            max-width: 1050px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .prof-welcome-card {
+            background-color: #ffffff;
+            border-left: 5px solid #059669;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .prof-welcome-card h2 {
+            margin: 0 0 5px 0;
+            color: #0f172a;
+            font-size: 18px;
+        }
+        .prof-welcome-card p {
+            margin: 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+        .badge-prof {
+            background-color: #d1fae5;
+            color: #065f46;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        /* Estilização para diferenciação de salas */
+        .badge-lab {
+            background-color: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            display: inline-block;
+        }
+        .badge-teorica {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+            border: 1px solid #93c5fd;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            display: inline-block;
+        }
+        .btn-sair {
+            background-color: #ef4444 !important;
+            border-color: #ef4444 !important;
+            font-weight: 600 !important;
+        }
+    </style>
 </h:head>
-
 <h:body>
 
-    <h2>Sistema de Localização Acadêmica</h2>
+    <div class="top-bar">
+        <h1>👨‍🏫 Portal SLA — Painel Docente</h1>
+        <h:form style="margin:0;">
+            <p:commandButton value="🚪 Sair" action="#{loginBean.deslogar}" styleClass="btn-sair" />
+        </h:form>
+    </div>
 
-    <h3>Painel do Professor</h3>
+    <div class="container">
+        <div class="prof-welcome-card">
+            <h2>Bem-vindo(a), <strong>Prof. #{professorBean.professorLogado.nome}</strong> <span class="badge-prof">Perfil: Docente</span></h2>
+            <p>Confira a alocação completa das suas turmas e a distinção entre ambientes de teoria e prática:</p>
+        </div>
 
-    <h:form>
-
-        <h4>Bem-vindo, #{professorBean.professorLogado.nome}!</h4>
-
-        <h3>Minhas Aulas</h3>
-
-        <h:dataTable value="#{professorBean.alocacoes}"
-                     var="aula"
-                     border="1">
-
-            <h:column>
-                <f:facet name="header">Disciplina</f:facet>
-                #{aula.disciplina.nome}
-            </h:column>
-
-            <h:column>
-                <f:facet name="header">Horário</f:facet>
-                #{aula.horario}
-            </h:column>
-
-            <h:column>
-                <f:facet name="header">Sala</f:facet>
-                #{aula.sala.numero}
-            </h:column>
-
-        </h:dataTable>
-
-        <br />
-
-        <h:commandButton value="Sair"
-                         action="#{loginBean.deslogar}" />
-
-    </h:form>
+        <h:form>
+            <p:panel header="📋 Grade de Alocação de Aulas e Ambientes">
+                <p:dataTable value="#{professorBean.alocacoes}" var="p" emptyMessage="Nenhuma alocação encontrada."
+                             styleClass="ui-datatable-striped">
+                    
+                    <p:column headerText="📖 Disciplina">
+                        <h:outputText value="#{p.disciplina.nome}" style="font-weight: 700; color: #0f172a;" />
+                    </p:column>
+                    
+                    <p:column headerText="⏰ Horário">
+                        <h:outputText value="🕒 #{p.horario}" style="font-size: 13.5px;" />
+                    </p:column>
+                    
+                    <p:column headerText="🏢 Bloco">
+                        <h:outputText value="#{p.sala.bloco}" style="font-weight: 600;" />
+                    </p:column>
+                    
+                    <p:column headerText="🚪 Número da Sala">
+                        <h:outputText value="#{p.sala.numero}" style="font-weight: 700; color: #334155;" />
+                    </p:column>
+                    
+                    <p:column headerText="🔬 Tipo de Ambiente">
+                        <!-- Diferenciação visual com destaque e emojis -->
+                        <h:panelGroup rendered="#{p.sala.tipo eq 'LABORATORIO'}">
+                            <span class="badge-lab">🧪 Laboratório Prático</span>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{p.sala.tipo eq 'TEORICA'}">
+                            <span class="badge-teorica">📖 Sala Teórica</span>
+                        </h:panelGroup>
+                    </p:column>
+                    
+                </p:dataTable>
+            </p:panel>
+        </h:form>
+    </div>
 
 </h:body>
 </html>

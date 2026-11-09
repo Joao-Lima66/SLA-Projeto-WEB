@@ -53,12 +53,11 @@
         <scope>runtime</scope>
     </dependency>
 
-    <!-- Integração JSF com Spring Boot -->
     <dependency>
-        <groupId>org.joinfaces</groupId>
-        <artifactId>faces-spring-boot-starter</artifactId>
-        <version>6.1.2</version>
-    </dependency>
+    <groupId>org.joinfaces</groupId>
+    <artifactId>primefaces-spring-boot-starter</artifactId>
+    <version>6.1.2</version>
+</dependency>
 
     <!-- Testes -->
     <dependency>
