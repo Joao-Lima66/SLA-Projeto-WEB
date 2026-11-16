@@ -8,38 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>SLA — Minhas Aulas e Horários</title>
     <link rel="stylesheet" href="#{request.contextPath}/css/style.css"/>
-    <script>
-        //<![CDATA[
-        (function () {
-            var savedTheme = localStorage.getItem('sla-theme') || 'light';
-            if (savedTheme === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-            }
-        })();
-        function atualizarBotaoTema() {
-            var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            var icon = document.getElementById('themeIcon');
-            var label = document.getElementById('themeLabel');
-            if (icon && label) {
-                icon.className = isDark ? 'pi pi-sun' : 'pi pi-moon';
-                label.textContent = isDark ? 'Modo Claro' : 'Modo Escuro';
-            }
-        }
-        function toggleTheme() {
-            var root = document.documentElement;
-            var isDark = root.getAttribute('data-theme') === 'dark';
-            if (isDark) {
-                root.removeAttribute('data-theme');
-                localStorage.setItem('sla-theme', 'light');
-            } else {
-                root.setAttribute('data-theme', 'dark');
-                localStorage.setItem('sla-theme', 'dark');
-            }
-            atualizarBotaoTema();
-        }
-        document.addEventListener('DOMContentLoaded', atualizarBotaoTema);
-        //]]>
-    </script>
 
     <style>
         /*<![CDATA[*/
@@ -56,22 +24,9 @@
             --border-color: #e2e8f0;
         }
 
-        [data-theme="dark"] {
-            --sla-green: #10b981;
-            --sla-green-dark: #34d399;
-            --sla-green-soft: rgba(16, 185, 129, 0.15);
-            --sla-green-border: rgba(16, 185, 129, 0.35);
-            --bg-page: #0f172a;
-            --bg-card: #1e293b;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border-color: #334155;
-        }
-
         body {
             background-color: var(--bg-page);
             color: var(--text-main);
-            transition: background-color 0.25s ease, color 0.25s ease;
         }
 
         /* Cabeçalho Superior com Gradiente Verde */
@@ -107,20 +62,6 @@
             padding: 0.4rem 0.9rem;
             border-radius: 999px;
             backdrop-filter: blur(4px);
-        }
-
-        .btn-theme-toggle {
-            background: rgba(255, 255, 255, 0.15) !important;
-            border: 1px solid rgba(255, 255, 255, 0.28) !important;
-            color: #ffffff !important;
-            border-radius: 8px;
-            padding: 0.45rem 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.28) !important;
         }
 
         /* Cabeçalho da Página */
@@ -226,10 +167,6 @@
             padding: 0.9rem 1rem !important;
         }
 
-        [data-theme="dark"] body .ui-datatable .ui-datatable-thead > tr > th {
-            color: #34d399 !important;
-        }
-
         body .ui-datatable .ui-datatable-data > tr {
             background: var(--bg-card) !important;
             color: var(--text-main) !important;
@@ -252,10 +189,6 @@
             border-radius: 8px;
             font-weight: 600;
             font-size: 0.9rem;
-        }
-
-        [data-theme="dark"] .loc-pill {
-            color: #6ee7b7;
         }
 
         .badge-tipo {
@@ -293,14 +226,6 @@
         body .btn-green-outline.ui-button:hover {
             background: var(--sla-green) !important;
             color: #ffffff !important;
-        }
-
-        [data-theme="dark"] body .btn-green-outline.ui-button {
-            color: #6ee7b7 !important;
-        }
-
-        [data-theme="dark"] body .btn-green-outline.ui-button:hover {
-            color: #0f172a !important;
         }
 
         /* Modal Detalhes */
@@ -341,10 +266,6 @@
                     <strong>#{sessionBean.usuarioLogado.nome}</strong> (Aluno)
                 </span>
             </div>
-            <button type="button" id="themeToggleBtn" class="btn-theme-toggle" onclick="toggleTheme()">
-                <i id="themeIcon" class="pi pi-moon"></i>
-                <span id="themeLabel">Modo Escuro</span>
-            </button>
             <h:form style="margin:0;">
                 <p:commandButton value="Sair" icon="pi pi-sign-out"
                                  action="#{loginBean.deslogar}"

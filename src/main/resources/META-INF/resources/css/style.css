@@ -18,23 +18,6 @@
     --radius: 10px;
 }
 
-[data-theme="dark"] {
-    --bg-page: #0B1120;
-    --bg-card: #111827;
-    --bg-subtle: #1E293B;
-    --border-color: #1E293B;
-    --primary: #22C55E;
-    --primary-hover: #16A34A;
-    --primary-soft: rgba(34, 197, 94, 0.16);
-    --text-main: #F1F5F9;
-    --text-muted: #94A3B8;
-    --success-bg: rgba(34, 197, 94, 0.18);
-    --success-text: #4ADE80;
-    --danger-bg: rgba(239, 68, 68, 0.18);
-    --danger-text: #F87171;
-    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
-}
-
 * {
     box-sizing: border-box;
     margin: 0;
@@ -46,7 +29,6 @@ body {
     background-color: var(--bg-page);
     color: var(--text-main);
     line-height: 1.5;
-    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Cabeçalho Superior */
@@ -97,27 +79,6 @@ body {
 .user-badge strong {
     color: var(--text-main);
     font-weight: 600;
-}
-
-.btn-theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background-color: var(--bg-subtle);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.btn-theme-toggle:hover {
-    border-color: var(--primary);
-    color: var(--primary);
 }
 
 /* Container Principal */
@@ -204,7 +165,7 @@ body {
     font-size: 1.2rem;
 }
 
-/* Abas PrimeFaces (TabView) em Verde + Dark Mode */
+/* Abas PrimeFaces (TabView) em Verde */
 body .ui-tabs {
     background: transparent !important;
     border: none !important;
@@ -401,7 +362,7 @@ body .ui-button.ui-button-danger:hover {
     border-color: #B91C1C !important;
 }
 
-/* Inputs, Dropdowns e Dialogs (Light + Dark Mode) */
+/* Inputs, Dropdowns e Dialogs */
 body .ui-inputfield,
 body .ui-selectonemenu {
     background: var(--bg-card) !important;

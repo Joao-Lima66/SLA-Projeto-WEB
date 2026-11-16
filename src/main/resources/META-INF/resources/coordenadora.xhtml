@@ -11,36 +11,6 @@
     <link rel="stylesheet" href="#{request.contextPath}/css/style.css"/>
     <script>
         //<![CDATA[
-        (function () {
-            var savedTheme = localStorage.getItem('sla-theme') || 'light';
-            if (savedTheme === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-            }
-        })();
-
-        function atualizarBotaoTema() {
-            var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            var icon = document.getElementById('themeIcon');
-            var label = document.getElementById('themeLabel');
-            if (icon && label) {
-                icon.className = isDark ? 'pi pi-sun' : 'pi pi-moon';
-                label.textContent = isDark ? 'Modo Claro' : 'Modo Escuro';
-            }
-        }
-
-        function toggleTheme() {
-            var root = document.documentElement;
-            var isDark = root.getAttribute('data-theme') === 'dark';
-            if (isDark) {
-                root.removeAttribute('data-theme');
-                localStorage.setItem('sla-theme', 'light');
-            } else {
-                root.setAttribute('data-theme', 'dark');
-                localStorage.setItem('sla-theme', 'dark');
-            }
-            atualizarBotaoTema();
-        }
-
         function abrirModalReserva(salaId, numero, bloco) {
             var hiddenInput = document.getElementById('formReservar:salaId');
             var infoSpan = document.getElementById('infoSalaReserva');
@@ -52,8 +22,6 @@
             }
             PF('dlgReservar').show();
         }
-
-        document.addEventListener('DOMContentLoaded', atualizarBotaoTema);
         //]]>
     </script>
 
@@ -72,23 +40,9 @@
             --border-color: #e2e8f0;
         }
 
-        [data-theme="dark"] {
-            --sla-green: #10b981;
-            --sla-green-dark: #34d399;
-            --sla-green-darker: #6ee7b7;
-            --sla-green-soft: rgba(16, 185, 129, 0.15);
-            --sla-green-border: rgba(16, 185, 129, 0.35);
-            --bg-page: #0f172a;
-            --bg-card: #1e293b;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border-color: #334155;
-        }
-
         body {
             background-color: var(--bg-page);
             color: var(--text-main);
-            transition: background-color 0.25s ease, color 0.25s ease;
         }
 
         /* Cabeçalho Superior com Gradiente Verde */
@@ -124,20 +78,6 @@
             padding: 0.4rem 0.9rem;
             border-radius: 999px;
             backdrop-filter: blur(4px);
-        }
-
-        .btn-theme-toggle {
-            background: rgba(255, 255, 255, 0.15) !important;
-            border: 1px solid rgba(255, 255, 255, 0.28) !important;
-            color: #ffffff !important;
-            border-radius: 8px;
-            padding: 0.45rem 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.28) !important;
         }
 
         /* Cabeçalho da Página */
@@ -269,18 +209,6 @@
             border: 1px solid #fca5a5;
         }
 
-        [data-theme="dark"] .badge-disponivel {
-            background-color: rgba(22, 163, 74, 0.2);
-            color: #4ade80;
-            border-color: rgba(74, 222, 128, 0.35);
-        }
-
-        [data-theme="dark"] .badge-ocupada {
-            background-color: rgba(220, 38, 38, 0.2);
-            color: #f87171;
-            border-color: rgba(248, 113, 113, 0.35);
-        }
-
         /* Modais */
         body .ui-dialog .ui-dialog-titlebar {
             background: linear-gradient(135deg, #065f46, #10b981) !important;
@@ -326,11 +254,6 @@
                     <strong>#{sessionBean.usuarioLogado.nome}</strong> (#{sessionBean.perfilNome})
                 </span>
             </div>
-
-            <button type="button" id="themeToggleBtn" class="btn-theme-toggle" onclick="toggleTheme()">
-                <i id="themeIcon" class="pi pi-moon"></i>
-                <span id="themeLabel">Modo Escuro</span>
-            </button>
 
             <h:form style="margin:0;">
                 <p:commandButton value="Sair" icon="pi pi-sign-out"
