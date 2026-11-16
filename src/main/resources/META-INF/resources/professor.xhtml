@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SLA — Consulta do Professor</title>
+    <link rel="stylesheet" href="#{request.contextPath}/css/style.css"/>
+    <script>
+        //<![CDATA[
+        (function () {
+            var savedTheme = localStorage.getItem('sla-theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+
+        function atualizarBotaoTema() {
+            var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            var icon = document.getElementById('themeIcon');
+            var label = document.getElementById('themeLabel');
+            if (icon && label) {
+                icon.className = isDark ? 'pi pi-sun' : 'pi pi-moon';
+                label.textContent = isDark ? 'Modo Claro' : 'Modo Escuro';
+            }
+        }
+
+        function toggleTheme() {
+            var root = document.documentElement;
+            var isDark = root.getAttribute('data-theme') === 'dark';
+            if (isDark) {
+                root.removeAttribute('data-theme');
+                localStorage.setItem('sla-theme', 'light');
+            } else {
+                root.setAttribute('data-theme', 'dark');
+                localStorage.setItem('sla-theme', 'dark');
+            }
+            atualizarBotaoTema();
+        }
+
+        document.addEventListener('DOMContentLoaded', atualizarBotaoTema);
+        //]]>
+    </script>
+
+    <style>
+        /*<![CDATA[*/
+        :root {
+            --sla-green: #10b981;
+            --sla-green-dark: #059669;
+            --sla-green-darker: #047857;
+            --sla-green-soft: #ecfdf5;
+            --sla-green-border: #a7f3d0;
+            --bg-page: #f4f7f5;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            --sla-green: #10b981;
+            --sla-green-dark: #34d399;
+            --sla-green-darker: #6ee7b7;
+            --sla-green-soft: rgba(16, 185, 129, 0.15);
+            --sla-green-border: rgba(16, 185, 129, 0.35);
+            --bg-page: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        /* Cabeçalho Superior com Gradiente Verde */
+        .topbar {
+            background: linear-gradient(135deg, #065f46 0%, #059669 60%, #10b981 100%) !important;
+            color: #ffffff !important;
+            border-bottom: 3px solid #34d399;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+            padding: 0.85rem 2rem;
+        }
+
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #ffffff !important;
+        }
+
+        .topbar-brand i {
+            background: rgba(255, 255, 255, 0.18);
+            padding: 0.5rem;
+            border-radius: 10px;
+            font-size: 1.15rem;
+            color: #a7f3d0;
+        }
+
+        .user-badge {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border: 1px solid rgba(255, 255, 255, 0.28) !important;
+            color: #ffffff !important;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-theme-toggle {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border: 1px solid rgba(255, 255, 255, 0.28) !important;
+            color: #ffffff !important;
+            border-radius: 8px;
+            padding: 0.45rem 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.28) !important;
+        }
+
+        /* Cabeçalho da Página */
+        .page-header {
+            border-left: 5px solid var(--sla-green);
+            padding-left: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .page-header h1 {
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+        }
+
+        /* Cards de Resumo (KPIs) */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .summary-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--sla-green);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.12);
+        }
+
+        .summary-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 0.35rem;
+        }
+
+        .summary-value {
+            font-size: 1.95rem;
+            font-weight: 800;
+            color: var(--sla-green-dark);
+        }
+
+        .summary-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--sla-green-soft);
+            color: var(--sla-green-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            border: 1px solid var(--sla-green-border);
+        }
+
+        /* Abas (p:tabView) Temáticas em Verde */
+        body .ui-tabs .ui-tabs-nav {
+            background: var(--bg-card) !important;
+            border-bottom: 2px solid var(--border-color) !important;
+            border-radius: 14px 14px 0 0;
+            padding: 0.5rem 0.75rem 0 0.75rem !important;
+        }
+
+        body .ui-tabs .ui-tabs-nav li.ui-tabs-header {
+            background: transparent !important;
+            border: none !important;
+            border-bottom: 3px solid transparent !important;
+            margin-right: 0.5rem !important;
+            transition: all 0.2s ease;
+        }
+
+        body .ui-tabs .ui-tabs-nav li.ui-tabs-header a {
+            color: var(--text-muted) !important;
+            font-weight: 600 !important;
+            padding: 0.85rem 1.25rem !important;
+        }
+
+        body .ui-tabs .ui-tabs-nav li.ui-tabs-header:hover a {
+            color: var(--sla-green-dark) !important;
+        }
+
+        body .ui-tabs .ui-tabs-nav li.ui-tabs-selected {
+            border-bottom: 3px solid var(--sla-green) !important;
+            background: var(--sla-green-soft) !important;
+            border-radius: 8px 8px 0 0;
+        }
+
+        body .ui-tabs .ui-tabs-nav li.ui-tabs-selected a {
+            color: var(--sla-green-darker) !important;
+            font-weight: 700 !important;
+        }
+
+        body .ui-tabs .ui-tabs-panels {
+            background: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+            border-top: none !important;
+            border-radius: 0 0 14px 14px;
+            padding: 1.5rem !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Barra de Filtros */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+            background: var(--sla-green-soft);
+            border: 1px solid var(--sla-green-border);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.25rem;
+        }
+
+        .filter-bar .ui-inputfield:focus,
+        .filter-bar .ui-selectonemenu.ui-state-focus {
+            border-color: var(--sla-green) !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+        }
+
+        /* Tabela PrimeFaces */
+        body .ui-datatable .ui-datatable-thead > tr > th {
+            background: var(--sla-green-soft) !important;
+            color: var(--sla-green-darker) !important;
+            border-bottom: 2px solid var(--sla-green) !important;
+            font-weight: 700 !important;
+            padding: 0.9rem 1rem !important;
+        }
+
+        body .ui-datatable .ui-datatable-data > tr {
+            background: var(--bg-card) !important;
+            color: var(--text-main) !important;
+            transition: background-color 0.15s ease;
+        }
+
+        body .ui-datatable .ui-datatable-data > tr:hover {
+            background: var(--sla-green-soft) !important;
+        }
+
+        /* Badges e Pílulas */
+        .bloco-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: var(--sla-green-soft);
+            color: var(--sla-green-darker);
+            border: 1px solid var(--sla-green-border);
+            padding: 0.25rem 0.65rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .badge-tipo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            background-color: var(--sla-green-soft);
+            color: var(--sla-green-darker);
+            border: 1px solid var(--sla-green-border);
+        }
+
+        .badge-disponivel {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            background-color: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .badge-ocupada {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+        }
+
+        [data-theme="dark"] .badge-disponivel {
+            background-color: rgba(22, 163, 74, 0.2);
+            color: #4ade80;
+            border-color: rgba(74, 222, 128, 0.35);
+        }
+
+        [data-theme="dark"] .badge-ocupada {
+            background-color: rgba(220, 38, 38, 0.2);
+            color: #f87171;
+            border-color: rgba(248, 113, 113, 0.35);
+        }
+
+        /* Botão Verde Outline */
+        body .btn-green-outline.ui-button {
+            background: var(--sla-green-soft) !important;
+            color: var(--sla-green-darker) !important;
+            border: 1px solid var(--sla-green) !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            transition: all 0.2s ease;
+        }
+
+        body .btn-green-outline.ui-button:hover {
+            background: var(--sla-green) !important;
+            color: #ffffff !important;
+        }
+
+        /* Modal Detalhes */
+        body .ui-dialog .ui-dialog-titlebar {
+            background: linear-gradient(135deg, #065f46, #10b981) !important;
+            color: #ffffff !important;
+            border: none !important;
+        }
+
+        body .ui-dialog .ui-dialog-titlebar-close .ui-icon {
+            color: #ffffff !important;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.65rem 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        /*]]>*/
+    </style>
+</h:head>
+
+<h:body>
+    <!-- Cabeçalho Superior -->
+    <header class="topbar">
+        <div class="topbar-brand">
+            <i class="pi pi-building"></i>
+            <span>SLA — Sistema de Localização Acadêmica</span>
+        </div>
+
+        <div class="topbar-actions">
+            <div class="user-badge">
+                <i class="pi pi-user"></i>
+                <span>
+                    <strong>#{sessionBean.usuarioLogado.nome}</strong> (Professor)
+                </span>
+            </div>
+
+            <button type="button" id="themeToggleBtn" class="btn-theme-toggle" onclick="toggleTheme()">
+                <i id="themeIcon" class="pi pi-moon"></i>
+                <span id="themeLabel">Modo Escuro</span>
+            </button>
+
+            <h:form style="margin:0;">
+                <p:commandButton value="Sair" icon="pi pi-sign-out"
+                                 action="#{loginBean.deslogar}"
+                                 ajax="false"
+                                 styleClass="ui-button-secondary"/>
+            </h:form>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-container">
+        <div class="page-header">
+            <h1>Painel do Professor</h1>
+            <p>Consulte a disponibilidade de salas e laboratórios e acompanhe suas aulas alocadas pela coordenação.</p>
+        </div>
+
+        <h:form id="formPrincipal">
+            <!-- 4 Cards de Resumo -->
+            <h:panelGroup id="painelKpis" layout="block" styleClass="summary-grid">
+                <div class="summary-card">
+                    <div>
+                        <span class="summary-label">Total de Salas / Labs</span>
+                        <span class="summary-value">#{professorBean.totalSalas}</span>
+                    </div>
+                    <div class="summary-icon">
+                        <i class="pi pi-building"></i>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div>
+                        <span class="summary-label">Disponíveis Agora</span>
+                        <span class="summary-value">#{professorBean.totalDisponiveis}</span>
+                    </div>
+                    <div class="summary-icon">
+                        <i class="pi pi-check-circle"></i>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div>
+                        <span class="summary-label">Ocupadas</span>
+                        <span class="summary-value">#{professorBean.totalOcupadas}</span>
+                    </div>
+                    <div class="summary-icon">
+                        <i class="pi pi-clock"></i>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div>
+                        <span class="summary-label">Minhas Aulas Alocadas</span>
+                        <span class="summary-value">#{professorBean.totalMinhasAlocacoes}</span>
+                    </div>
+                    <div class="summary-icon">
+                        <i class="pi pi-calendar"></i>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+            <!-- Navegação em Abas (Somente Consulta) -->
+            <p:tabView id="tabPrincipal">
+                <!-- ABA 1: Consultar Salas e Laboratórios -->
+                <p:tab title="Salas e Laboratórios">
+                    <div class="filter-bar">
+                        <span class="ui-input-icon-left" style="flex: 1; min-width: 240px;">
+                            <i class="pi pi-search" style="color: var(--sla-green-dark);"></i>
+                            <p:inputText value="#{professorBean.filtroBusca}"
+                                         style="width: 100%;"
+                                         placeholder="Buscar por sala, bloco, disciplina ou professor...">
+                                <p:ajax event="keyup" delay="300" update="tabelaSalas"/>
+                            </p:inputText>
+                        </span>
+
+                        <p:selectOneMenu value="#{professorBean.filtroBloco}">
+                            <f:selectItem itemLabel="Todos os Blocos" itemValue=""/>
+                            <f:selectItems value="#{professorBean.blocosDisponiveis}" var="bloco"
+                                           itemLabel="Bloco #{bloco}" itemValue="#{bloco}"/>
+                            <p:ajax update="tabelaSalas"/>
+                        </p:selectOneMenu>
+
+                        <p:selectOneMenu value="#{professorBean.filtroTipo}">
+                            <f:selectItem itemLabel="Todos os Tipos" itemValue=""/>
+                            <f:selectItem itemLabel="Sala Teórica" itemValue="SALA_TEORICA"/>
+                            <f:selectItem itemLabel="Laboratório" itemValue="LABORATORIO"/>
+                            <p:ajax update="tabelaSalas"/>
+                        </p:selectOneMenu>
+
+                        <p:selectOneMenu value="#{professorBean.filtroStatus}">
+                            <f:selectItem itemLabel="Todos os Status" itemValue=""/>
+                            <f:selectItem itemLabel="Disponível" itemValue="DISPONIVEL"/>
+                            <f:selectItem itemLabel="Ocupada" itemValue="OCUPADA"/>
+                            <p:ajax update="tabelaSalas"/>
+                        </p:selectOneMenu>
+
+                        <p:commandButton value="Limpar Filtros" icon="pi pi-filter-slash"
+                                         action="#{professorBean.limparFiltros}"
+                                         process="@this"
+                                         update="tabPrincipal"
+                                         styleClass="ui-button-outlined ui-button-success"/>
+                    </div>
+
+                    <div class="table-responsive">
+                        <p:dataTable id="tabelaSalas" value="#{professorBean.salasFiltradas}" var="sala"
+                                     emptyMessage="Nenhuma sala ou laboratório encontrado com os filtros selecionados.">
+
+                            <p:column headerText="Sala / Lab">
+                                <strong style="color: var(--sla-green-darker); font-size: 1rem;">#{sala.numero}</strong>
+                            </p:column>
+
+                            <p:column headerText="Bloco">
+                                <span class="bloco-pill">
+                                    <i class="pi pi-map-marker"></i> Bloco #{sala.bloco}
+                                </span>
+                            </p:column>
+
+                            <p:column headerText="Tipo">
+                                <span class="badge-tipo">
+                                    <i class="#{sala.tipo eq 'LABORATORIO' ? 'pi pi-desktop' : 'pi pi-book'}"></i>
+                                    #{sala.tipoFormatado}
+                                </span>
+                            </p:column>
+
+                            <p:column headerText="Capacidade">
+                                <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                                    <i class="pi pi-users" style="color: var(--sla-green);"></i>
+                                    #{sala.capacidade} lugares
+                                </span>
+                            </p:column>
+
+                            <p:column headerText="Status">
+                                <h:panelGroup rendered="#{sala.status eq 'DISPONIVEL'}">
+                                    <span class="badge-disponivel">
+                                        <i class="pi pi-check-circle"></i> Disponível
+                                    </span>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{sala.status eq 'OCUPADA'}">
+                                    <span class="badge-ocupada">
+                                        <i class="pi pi-lock"></i> Ocupada
+                                    </span>
+                                </h:panelGroup>
+                            </p:column>
+
+                            <p:column headerText="Ocupação Atual">
+                                <h:panelGroup rendered="#{sala.status eq 'OCUPADA'}">
+                                    <div><strong>#{sala.disciplinaNome}</strong></div>
+                                    <small style="color: var(--text-muted);">
+                                        <i class="pi pi-user" style="font-size: 0.75rem; color: var(--sla-green);"></i>
+                                        Prof. #{sala.usuarioNome} • #{sala.diaSemana} (#{sala.horario})
+                                    </small>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{sala.status eq 'DISPONIVEL'}">
+                                    <span style="color: var(--sla-green-dark); font-style: italic; font-size: 0.9rem;">
+                                        Sem aula alocada no momento
+                                    </span>
+                                </h:panelGroup>
+                            </p:column>
+
+                            <p:column headerText="Consulta" style="text-align: center;">
+                                <p:commandButton value="Ver Detalhes" icon="pi pi-info-circle"
+                                                 rendered="#{sala.status eq 'OCUPADA'}"
+                                                 action="#{professorBean.verDetalhes(sala)}"
+                                                 process="@this"
+                                                 update=":formDetalhes"
+                                                 oncomplete="PF('dlgDetalhes').show()"
+                                                 styleClass="btn-green-outline"/>
+
+                                <h:panelGroup rendered="#{sala.status eq 'DISPONIVEL'}">
+                                    <span style="font-size: 0.85rem; color: var(--sla-green-dark); font-weight: 600;">
+                                        Livre
+                                    </span>
+                                </h:panelGroup>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </p:tab>
+
+                <!-- ABA 2: Minhas Aulas Alocadas (Criadas pela Coordenação) -->
+                <p:tab title="Minhas Aulas (#{professorBean.totalMinhasAlocacoes})">
+                    <div class="table-responsive">
+                        <p:dataTable id="tabelaMinhasAlocacoes" value="#{professorBean.minhasAlocacoes}" var="aloc"
+                                     emptyMessage="Nenhuma aula alocada para você pela coordenação até o momento.">
+
+                            <p:column headerText="Disciplina">
+                                <strong>#{aloc.disciplinaNome}</strong>
+                            </p:column>
+
+                            <p:column headerText="Tipo">
+                                <span class="badge-tipo">
+                                    <i class="#{aloc.salaTipo eq 'LABORATORIO' ? 'pi pi-desktop' : 'pi pi-book'}"></i>
+                                    #{aloc.salaTipoFormatado}
+                                </span>
+                            </p:column>
+
+                            <p:column headerText="Dia da Semana">
+                                <strong>#{aloc.diaSemana}</strong>
+                            </p:column>
+
+                            <p:column headerText="Horário">
+                                <span>
+                                    <i class="pi pi-clock" style="color: var(--sla-green); font-size: 0.85rem;"></i>
+                                    #{aloc.horario}
+                                </span>
+                            </p:column>
+
+                            <p:column headerText="Sala / Lab">
+                                <strong style="color: var(--sla-green-darker);">#{aloc.salaNumero}</strong>
+                            </p:column>
+
+                            <p:column headerText="Bloco">
+                                <span class="bloco-pill">
+                                    <i class="pi pi-map-marker"></i> Bloco #{aloc.salaBloco}
+                                </span>
+                            </p:column>
+
+                            <p:column headerText="Status">
+                                <span class="badge-disponivel">
+                                    <i class="pi pi-check-circle"></i> Confirmada
+                                </span>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+    </main>
+
+    <!-- Modal: Detalhes da Ocupação -->
+    <p:dialog header="Detalhes da Ocupação" widgetVar="dlgDetalhes" modal="true"
+              resizable="false" width="460" closeOnEscape="true">
+        <h:form id="formDetalhes">
+            <h:panelGroup rendered="#{professorBean.salaDetalhes != null}">
+                <div class="detail-list">
+                    <div class="detail-item">
+                        <span>Espaço</span>
+                        <strong style="color: var(--sla-green-dark);">
+                            #{professorBean.salaDetalhes.numero} — Bloco #{professorBean.salaDetalhes.bloco}
+                        </strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Tipo</span>
+                        <strong>#{professorBean.salaDetalhes.tipoFormatado}</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Professor Responsável</span>
+                        <strong>#{professorBean.salaDetalhes.usuarioNome}</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Matrícula</span>
+                        <strong>#{professorBean.salaDetalhes.usuarioMatricula}</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Disciplina</span>
+                        <strong>#{professorBean.salaDetalhes.disciplinaNome}</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Dia da Semana</span>
+                        <strong>#{professorBean.salaDetalhes.diaSemana}</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Horário</span>
+                        <strong>#{professorBean.salaDetalhes.horario}</strong>
+                    </div>
+                </div>
+
+                <div class="dialog-footer" style="margin-top: 1.25rem; text-align: right;">
+                    <p:commandButton value="Fechar" type="button"
+                                     icon="pi pi-check"
+                                     styleClass="ui-button-success"
+                                     onclick="PF('dlgDetalhes').hide()"/>
+                </div>
+            </h:panelGroup>
+        </h:form>
+    </p:dialog>
+</h:body>
+</html>

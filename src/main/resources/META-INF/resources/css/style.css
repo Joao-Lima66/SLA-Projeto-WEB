@@ -1,0 +1,517 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --bg-page: #F8FAFC;
+    --bg-card: #FFFFFF;
+    --bg-subtle: #F1F5F9;
+    --border-color: #E2E8F0;
+    --primary: #15803D;
+    --primary-hover: #166534;
+    --primary-soft: #DCFCE7;
+    --text-main: #0F172A;
+    --text-muted: #64748B;
+    --success-bg: #DCFCE7;
+    --success-text: #15803D;
+    --danger-bg: #FEE2E2;
+    --danger-text: #B91C1C;
+    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+    --radius: 10px;
+}
+
+[data-theme="dark"] {
+    --bg-page: #0B1120;
+    --bg-card: #111827;
+    --bg-subtle: #1E293B;
+    --border-color: #1E293B;
+    --primary: #22C55E;
+    --primary-hover: #16A34A;
+    --primary-soft: rgba(34, 197, 94, 0.16);
+    --text-main: #F1F5F9;
+    --text-muted: #94A3B8;
+    --success-bg: rgba(34, 197, 94, 0.18);
+    --success-text: #4ADE80;
+    --danger-bg: rgba(239, 68, 68, 0.18);
+    --danger-text: #F87171;
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    line-height: 1.5;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Cabeçalho Superior */
+.topbar {
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.topbar-brand i {
+    font-size: 1.3rem;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.user-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    background-color: var(--bg-subtle);
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.user-badge strong {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.btn-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--bg-subtle);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-theme-toggle:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* Container Principal */
+.main-container {
+    max-width: 1360px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 28px 24px 48px;
+}
+
+.page-header {
+    margin-bottom: 24px;
+}
+
+.page-header h1 {
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.page-header p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+/* 4 Cards de Resumo em Linha Única */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 1024px) {
+    .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 560px) {
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.summary-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+}
+
+.summary-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.summary-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1.1;
+}
+
+.summary-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background-color: var(--primary-soft);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+/* Abas PrimeFaces (TabView) em Verde + Dark Mode */
+body .ui-tabs {
+    background: transparent !important;
+    border: none !important;
+}
+
+body .ui-tabs .ui-tabs-nav {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius) var(--radius) 0 0 !important;
+    padding: 6px 8px 0 !important;
+}
+
+body .ui-tabs .ui-tabs-nav li.ui-tabs-header {
+    background: transparent !important;
+    border: none !important;
+    margin-right: 6px !important;
+}
+
+body .ui-tabs .ui-tabs-nav li.ui-tabs-header a {
+    color: var(--text-muted) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 0.92rem !important;
+    padding: 12px 18px !important;
+    border-bottom: 2px solid transparent !important;
+}
+
+body .ui-tabs .ui-tabs-nav li.ui-tabs-header.ui-state-active a {
+    color: var(--primary) !important;
+    border-bottom: 2px solid var(--primary) !important;
+}
+
+body .ui-tabs .ui-tabs-panels {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-top: none !important;
+    border-radius: 0 0 var(--radius) var(--radius) !important;
+    padding: 24px !important;
+    color: var(--text-main) !important;
+}
+
+body .ui-tabs .ui-tabs-panel {
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+/* Barra de Busca e Filtros */
+.filter-bar {
+    display: grid;
+    grid-template-columns: 2.2fr 1fr 1.1fr 1fr auto;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+@media (max-width: 980px) {
+    .filter-bar {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .filter-bar {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Tabelas PrimeFaces Responsivas e Sem Cortes */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+body .ui-datatable {
+    width: 100% !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    overflow: hidden;
+}
+
+body .ui-datatable table {
+    width: 100% !important;
+    table-layout: auto !important;
+}
+
+body .ui-datatable .ui-datatable-thead > tr > th {
+    background-color: var(--bg-subtle) !important;
+    color: var(--text-muted) !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    padding: 13px 16px !important;
+    border: none !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    white-space: nowrap !important;
+    text-align: left !important;
+}
+
+body .ui-datatable .ui-datatable-tbody > tr > td {
+    background-color: var(--bg-card) !important;
+    color: var(--text-main) !important;
+    font-size: 0.9rem !important;
+    padding: 13px 16px !important;
+    border: none !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    vertical-align: middle !important;
+}
+
+body .ui-datatable .ui-datatable-tbody > tr:hover > td {
+    background-color: var(--bg-subtle) !important;
+}
+
+body .ui-datatable .ui-datatable-empty-message td {
+    text-align: center !important;
+    color: var(--text-muted) !important;
+    padding: 28px 16px !important;
+}
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge-disponivel {
+    background-color: var(--success-bg);
+    color: var(--success-text);
+}
+
+.badge-ocupada {
+    background-color: var(--danger-bg);
+    color: var(--danger-text);
+}
+
+.badge-tipo {
+    background-color: var(--bg-subtle);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+
+/* Botões PrimeFaces em Verde (Substitui o Azul Padrão) */
+body .ui-button {
+    background: var(--primary) !important;
+    background-color: var(--primary) !important;
+    border: 1px solid var(--primary) !important;
+    color: #FFFFFF !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    border-radius: 8px !important;
+    padding: 0.5rem 0.95rem !important;
+    box-shadow: none !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease !important;
+}
+
+body .ui-button:hover,
+body .ui-button:focus {
+    background: var(--primary-hover) !important;
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+    box-shadow: none !important;
+}
+
+body .ui-button.ui-button-secondary {
+    background: var(--bg-subtle) !important;
+    background-color: var(--bg-subtle) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-main) !important;
+}
+
+body .ui-button.ui-button-secondary:hover {
+    background: var(--border-color) !important;
+    background-color: var(--border-color) !important;
+    border-color: var(--primary) !important;
+}
+
+body .ui-button.ui-button-danger {
+    background: #DC2626 !important;
+    background-color: #DC2626 !important;
+    border-color: #DC2626 !important;
+    color: #FFFFFF !important;
+}
+
+body .ui-button.ui-button-danger:hover {
+    background: #B91C1C !important;
+    background-color: #B91C1C !important;
+    border-color: #B91C1C !important;
+}
+
+/* Inputs, Dropdowns e Dialogs (Light + Dark Mode) */
+body .ui-inputfield,
+body .ui-selectonemenu {
+    background: var(--bg-card) !important;
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-main) !important;
+    border-radius: 8px !important;
+    font-family: 'Inter', sans-serif !important;
+    width: 100% !important;
+}
+
+body .ui-inputfield:focus,
+body .ui-selectonemenu.ui-state-focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 2px var(--primary-soft) !important;
+}
+
+body .ui-selectonemenu .ui-selectonemenu-label {
+    background: transparent !important;
+    color: var(--text-main) !important;
+}
+
+body .ui-selectonemenu .ui-selectonemenu-trigger {
+    background: transparent !important;
+    border-left: 1px solid var(--border-color) !important;
+    color: var(--text-muted) !important;
+}
+
+body .ui-selectonemenu-panel {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+body .ui-selectonemenu-panel .ui-selectonemenu-item {
+    color: var(--text-main) !important;
+    background: var(--bg-card) !important;
+}
+
+body .ui-selectonemenu-panel .ui-selectonemenu-item.ui-state-highlight,
+body .ui-selectonemenu-panel .ui-selectonemenu-item:hover {
+    background: var(--primary-soft) !important;
+    color: var(--primary) !important;
+}
+
+body .ui-dialog {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    color: var(--text-main) !important;
+}
+
+body .ui-dialog .ui-dialog-titlebar {
+    background: var(--bg-card) !important;
+    color: var(--text-main) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    padding: 16px 20px !important;
+    font-weight: 600 !important;
+}
+
+body .ui-dialog .ui-dialog-content {
+    background: var(--bg-card) !important;
+    color: var(--text-main) !important;
+    padding: 20px !important;
+}
+
+.form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.form-field label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 6px;
+}
+
+.detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background-color: var(--bg-subtle);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.detail-item span {
+    color: var(--text-muted);
+}
+
+.detail-item strong {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-color);
+}

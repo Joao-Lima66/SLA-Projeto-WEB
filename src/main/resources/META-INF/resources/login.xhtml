@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SLA — Login</title>
+    <link rel="stylesheet" href="#{request.contextPath}/css/style.css"/>
+    <style>
+        /* Fundo degradê verde */
+        body.login-page {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #10b981 100%);
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        html[data-theme='dark'] body.login-page {
+            background: linear-gradient(135deg, #022c22 0%, #064e3b 60%, #065f46 100%);
+        }
+
+        /* Container principal */
+        .login-layout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            width: 100%;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            gap: 4rem;
+            box-sizing: border-box;
+        }
+
+        /* Lado esquerdo ampliado */
+        .login-hero-text {
+            display: none;
+            flex: 1.2;
+            color: #ffffff;
+            max-width: 680px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.32);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 0.5rem 1.15rem;
+            border-radius: 999px;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.6px;
+            backdrop-filter: blur(6px);
+        }
+
+        .hero-title {
+            font-size: 3.3rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin: 0 0 1.4rem;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-tagline {
+            font-size: 1.3rem;
+            line-height: 1.65;
+            opacity: 0.95;
+            margin: 0;
+            border-left: 5px solid #34d399;
+            padding-left: 1.35rem;
+            font-weight: 400;
+        }
+
+        @media (min-width: 960px) {
+            .login-layout {
+                justify-content: space-between;
+                padding: 2rem 6vw;
+            }
+            .login-hero-text {
+                display: block;
+            }
+        }
+
+        /* Janela principal de Login no canto direito */
+        .login-window {
+            background: var(--card-bg, #ffffff);
+            border-radius: 16px;
+            box-shadow: 0 22px 50px rgba(0, 0, 0, 0.3);
+            max-width: 430px;
+            width: 100%;
+            overflow: hidden;
+            border-top: 6px solid #059669;
+            animation: slideUp 0.4s ease-out;
+            margin-left: auto;
+        }
+
+        @media (max-width: 959px) {
+            .login-window {
+                margin-right: auto;
+            }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Barra superior estilo janelinha */
+        .window-header {
+            background: rgba(6, 78, 59, 0.06);
+            padding: 0.8rem 1.35rem;
+            border-bottom: 1px solid var(--border-color, #e5e7eb);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .window-dots {
+            display: flex;
+            gap: 7px;
+        }
+
+        .window-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .dot-dark   { background-color: #065f46; }
+        .dot-medium { background-color: #10b981; }
+        .dot-light  { background-color: #6ee7b7; }
+
+        .window-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted, #6b7280);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .window-body {
+            padding: 2.25rem;
+        }
+
+        /* Botão Principal em Verde */
+        .btn-green-primary.ui-button {
+            background: #059669 !important;
+            border-color: #059669 !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+            border-radius: 8px !important;
+            transition: background 0.2s ease, transform 0.1s ease !important;
+        }
+
+        .btn-green-primary.ui-button:hover {
+            background: #047857 !important;
+            border-color: #047857 !important;
+            transform: translateY(-1px);
+        }
+
+        /* Botão Secundário com contorno verde */
+        .btn-outline-accent.ui-button {
+            border: 1.5px solid #059669 !important;
+            color: #059669 !important;
+            background: transparent !important;
+            font-weight: 600 !important;
+            border-radius: 8px !important;
+        }
+
+        .btn-outline-accent.ui-button:hover {
+            background: rgba(5, 150, 105, 0.08) !important;
+        }
+
+        /* Botão de tema */
+        .login-page .btn-theme-toggle {
+            background: rgba(255, 255, 255, 0.16);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(6px);
+        }
+
+        .login-page .btn-theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.26);
+        }
+    </style>
+    <script>
+        //<![CDATA[
+        (function () {
+            var savedTheme = localStorage.getItem('sla-theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+        function atualizarBotaoTema() {
+            var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            var icon = document.getElementById('themeIcon');
+            var label = document.getElementById('themeLabel');
+            if (icon && label) {
+                icon.className = isDark ? 'pi pi-sun' : 'pi pi-moon';
+                label.textContent = isDark ? 'Modo Claro' : 'Modo Escuro';
+            }
+        }
+        function toggleTheme() {
+            var root = document.documentElement;
+            var isDark = root.getAttribute('data-theme') === 'dark';
+            if (isDark) {
+                root.removeAttribute('data-theme');
+                localStorage.setItem('sla-theme', 'light');
+            } else {
+                root.setAttribute('data-theme', 'dark');
+                localStorage.setItem('sla-theme', 'dark');
+            }
+            atualizarBotaoTema();
+        }
+        document.addEventListener('DOMContentLoaded', atualizarBotaoTema);
+        //]]>
+    </script>
+</h:head>
+<h:body styleClass="login-page">
+    <p:growl id="growlLogin" showDetail="true" life="4000"/>
+
+    <!-- Barra superior discreta com seletor de tema -->
+    <header class="topbar" style="background: transparent; border-bottom: none; justify-content: flex-end; padding: 1rem 1.5rem;">
+        <button type="button" id="themeToggleBtn" class="btn-theme-toggle" onclick="toggleTheme()">
+            <i id="themeIcon" class="pi pi-moon"></i>
+            <span id="themeLabel">Modo Escuro</span>
+        </button>
+    </header>
+
+    <main class="login-layout">
+        <!-- Lado esquerdo com selo Portal Acadêmico, título e subtítulo -->
+        <div class="login-hero-text">
+            <div class="hero-badge">
+                <i class="pi pi-building"></i>
+                <span>Portal Acadêmico</span>
+            </div>
+            <h2 class="hero-title">
+                Encontre suas aulas sem complicação.
+            </h2>
+            <p class="hero-tagline">
+                Consulte seus horários, descubra onde será cada aula e encontre sua sala com facilidade.
+            </p>
+        </div>
+
+        <!-- Janelinha de Login limpa no canto direito -->
+        <div class="login-window">
+            <div class="window-header">
+                <div class="window-dots">
+                    <span class="window-dot dot-dark"></span>
+                    <span class="window-dot dot-medium"></span>
+                    <span class="window-dot dot-light"></span>
+                </div>
+                <span class="window-title">Acesso ao Portal</span>
+            </div>
+
+            <div class="window-body">
+                <div style="margin-bottom: 1.75rem;">
+                    <h1 style="font-size: 1.45rem; font-weight: 700; color: var(--text-main); margin: 0 0 0.35rem;">
+                        Bem-vindo de volta
+                    </h1>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+                        Entre com sua matrícula e senha para acessar.
+                    </p>
+                </div>
+
+                <h:form id="loginForm">
+                    <p:messages id="messages" showDetails="true" closable="true" style="margin-bottom: 1.25rem;"/>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="matricula">Matrícula</label>
+                            <p:inputText id="matricula" value="#{loginBean.matricula}" required="true"
+                                         requiredMessage="Informe sua matrícula."
+                                         placeholder="Ex: 2023001"/>
+                        </div>
+                        <div class="form-field">
+                            <label for="senha">Senha</label>
+                            <p:password id="senha" value="#{loginBean.senha}" required="true"
+                                        requiredMessage="Informe sua senha."
+                                        feedback="false" toggleMask="true"
+                                        style="width: 100%;" inputStyle="width: 100%;"/>
+                        </div>
+                        <p:commandButton value="Entrar" icon="pi pi-sign-in"
+                                         action="#{loginBean.entrar}"
+                                         update="@form"
+                                         styleClass="btn-green-primary"
+                                         style="width: 100%; margin-top: 0.5rem; padding: 0.7rem;"/>
+                    </div>
+                </h:form>
+
+                <div style="margin-top: 1.65rem; padding-top: 1.35rem; border-top: 1px solid var(--border-color); text-align: center;">
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.75rem;">
+                        Ainda não possui acesso ao sistema?
+                    </p>
+                    <p:commandButton value="Criar Conta" icon="pi pi-user-plus"
+                                     type="button"
+                                     onclick="PF('dlgCadastro').show()"
+                                     styleClass="btn-outline-accent"
+                                     style="width: 100%;"/>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Cadastro de Conta -->
+    <p:dialog id="dlgCadastro" header="Cadastro de Conta" widgetVar="dlgCadastro" modal="true"
+              resizable="false" width="460" closeOnEscape="true">
+        <h:form id="cadastroForm">
+            <p:messages id="msgCad" showDetails="true" closable="true" style="margin-bottom: 1rem;"/>
+            <div class="form-grid">
+                <div class="form-field">
+                    <label for="cadNome">Nome completo *</label>
+                    <p:inputText id="cadNome" value="#{coordenadoraBean.novoNome}" required="true"
+                                 placeholder="Ex: Ana Silva"/>
+                </div>
+                <div class="form-field">
+                    <label for="cadMatricula">Matrícula *</label>
+                    <p:inputText id="cadMatricula" value="#{coordenadoraBean.novaMatricula}" required="true"
+                                 placeholder="Ex: 2023001"/>
+                </div>
+                <div class="form-field">
+                    <label for="cadEmail">E-mail *</label>
+                    <p:inputText id="cadEmail" value="#{coordenadoraBean.novoEmail}" required="true"
+                                 placeholder="exemplo@email.com"/>
+                </div>
+                <div class="form-field">
+                    <label for="cadSenha">Senha *</label>
+                    <p:password id="cadSenha" value="#{coordenadoraBean.novaSenha}" required="true"
+                                feedback="false" style="width: 100%;" inputStyle="width: 100%;"/>
+                </div>
+                <div class="form-field">
+                    <label for="cadPerfil">Perfil *</label>
+                    <p:selectOneMenu id="cadPerfil" value="#{coordenadoraBean.novoPerfilId}" required="true">
+                        <f:selectItems value="#{coordenadoraBean.perfis}" var="p"
+                                       itemLabel="#{p.nome}" itemValue="#{p.id}"/>
+                    </p:selectOneMenu>
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <p:commandButton value="Cancelar" icon="pi pi-times" type="button"
+                                 styleClass="ui-button-secondary"
+                                 onclick="PF('dlgCadastro').hide()"/>
+                <p:commandButton value="Cadastrar" icon="pi pi-check"
+                                 action="#{coordenadoraBean.salvarUsuario()}"
+                                 update="cadastroForm msgCad :growlLogin"
+                                 styleClass="btn-green-primary"
+                                 oncomplete="if (!args.validationFailed) PF('dlgCadastro').hide()"/>
+            </div>
+        </h:form>
+    </p:dialog>
+</h:body>
+</html>

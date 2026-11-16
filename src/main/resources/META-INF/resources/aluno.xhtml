@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SLA — Minhas Aulas e Horários</title>
+    <link rel="stylesheet" href="#{request.contextPath}/css/style.css"/>
+    <script>
+        //<![CDATA[
+        (function () {
+            var savedTheme = localStorage.getItem('sla-theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+        function atualizarBotaoTema() {
+            var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            var icon = document.getElementById('themeIcon');
+            var label = document.getElementById('themeLabel');
+            if (icon && label) {
+                icon.className = isDark ? 'pi pi-sun' : 'pi pi-moon';
+                label.textContent = isDark ? 'Modo Claro' : 'Modo Escuro';
+            }
+        }
+        function toggleTheme() {
+            var root = document.documentElement;
+            var isDark = root.getAttribute('data-theme') === 'dark';
+            if (isDark) {
+                root.removeAttribute('data-theme');
+                localStorage.setItem('sla-theme', 'light');
+            } else {
+                root.setAttribute('data-theme', 'dark');
+                localStorage.setItem('sla-theme', 'dark');
+            }
+            atualizarBotaoTema();
+        }
+        document.addEventListener('DOMContentLoaded', atualizarBotaoTema);
+        //]]>
+    </script>
+
+    <style>
+        /*<![CDATA[*/
+        :root {
+            --sla-green: #10b981;
+            --sla-green-dark: #059669;
+            --sla-green-darker: #047857;
+            --sla-green-soft: #ecfdf5;
+            --sla-green-border: #a7f3d0;
+            --bg-page: #f4f7f5;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            --sla-green: #10b981;
+            --sla-green-dark: #34d399;
+            --sla-green-soft: rgba(16, 185, 129, 0.15);
+            --sla-green-border: rgba(16, 185, 129, 0.35);
+            --bg-page: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        /* Cabeçalho Superior com Gradiente Verde */
+        .topbar {
+            background: linear-gradient(135deg, #065f46 0%, #059669 60%, #10b981 100%) !important;
+            color: #ffffff !important;
+            border-bottom: 3px solid #34d399;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+            padding: 0.85rem 2rem;
+        }
+
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #ffffff !important;
+        }
+
+        .topbar-brand i {
+            background: rgba(255, 255, 255, 0.18);
+            padding: 0.5rem;
+            border-radius: 10px;
+            font-size: 1.15rem;
+            color: #a7f3d0;
+        }
+
+        .user-badge {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border: 1px solid rgba(255, 255, 255, 0.28) !important;
+            color: #ffffff !important;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-theme-toggle {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border: 1px solid rgba(255, 255, 255, 0.28) !important;
+            color: #ffffff !important;
+            border-radius: 8px;
+            padding: 0.45rem 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.28) !important;
+        }
+
+        /* Cabeçalho da Página */
+        .page-header {
+            border-left: 5px solid var(--sla-green);
+            padding-left: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .page-header h1 {
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+        }
+
+        /* Cards de Resumo */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .summary-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--sla-green);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.12);
+        }
+
+        .summary-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 0.35rem;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--sla-green-dark);
+        }
+
+        .summary-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: var(--sla-green-soft);
+            color: var(--sla-green-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            border: 1px solid var(--sla-green-border);
+        }
+
+        /* Card Principal e Barra de Filtros */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        }
+
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+            background: var(--sla-green-soft);
+            border: 1px solid var(--sla-green-border);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.25rem;
+        }
+
+        .filter-bar .ui-inputfield:focus,
+        .filter-bar .ui-selectonemenu.ui-state-focus {
+            border-color: var(--sla-green) !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+        }
+
+        /* Tabela PrimeFaces */
+        body .ui-datatable .ui-datatable-thead > tr > th {
+            background: var(--sla-green-soft) !important;
+            color: var(--sla-green-darker) !important;
+            border-bottom: 2px solid var(--sla-green) !important;
+            font-weight: 700 !important;
+            padding: 0.9rem 1rem !important;
+        }
+
+        [data-theme="dark"] body .ui-datatable .ui-datatable-thead > tr > th {
+            color: #34d399 !important;
+        }
+
+        body .ui-datatable .ui-datatable-data > tr {
+            background: var(--bg-card) !important;
+            color: var(--text-main) !important;
+            transition: background-color 0.15s ease;
+        }
+
+        body .ui-datatable .ui-datatable-data > tr:hover {
+            background: var(--sla-green-soft) !important;
+        }
+
+        /* Badges de Localização e Ambiente */
+        .loc-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--sla-green-soft);
+            color: var(--sla-green-darker);
+            border: 1px solid var(--sla-green-border);
+            padding: 0.3rem 0.7rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        [data-theme="dark"] .loc-pill {
+            color: #6ee7b7;
+        }
+
+        .badge-tipo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .badge-teorica {
+            background-color: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+
+        .badge-lab {
+            background-color: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        /* Botão Verde Personalizado */
+        body .btn-green-outline.ui-button {
+            background: var(--sla-green-soft) !important;
+            color: var(--sla-green-darker) !important;
+            border: 1px solid var(--sla-green) !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            transition: all 0.2s ease;
+        }
+
+        body .btn-green-outline.ui-button:hover {
+            background: var(--sla-green) !important;
+            color: #ffffff !important;
+        }
+
+        [data-theme="dark"] body .btn-green-outline.ui-button {
+            color: #6ee7b7 !important;
+        }
+
+        [data-theme="dark"] body .btn-green-outline.ui-button:hover {
+            color: #0f172a !important;
+        }
+
+        /* Modal Detalhes */
+        body .ui-dialog .ui-dialog-titlebar {
+            background: linear-gradient(135deg, #065f46, #10b981) !important;
+            color: #ffffff !important;
+            border: none !important;
+        }
+
+        body .ui-dialog .ui-dialog-titlebar-close .ui-icon {
+            color: #ffffff !important;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.65rem 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        /*]]>*/
+    </style>
+</h:head>
+<h:body>
+    <!-- Cabeçalho Superior -->
+    <header class="topbar">
+        <div class="topbar-brand">
+            <i class="pi pi-building"></i>
+            <span>SLA — Sistema de Localização Acadêmica</span>
+        </div>
+        <div class="topbar-actions">
+            <div class="user-badge">
+                <i class="pi pi-user"></i>
+                <span>
+                    <strong>#{sessionBean.usuarioLogado.nome}</strong> (Aluno)
+                </span>
+            </div>
+            <button type="button" id="themeToggleBtn" class="btn-theme-toggle" onclick="toggleTheme()">
+                <i id="themeIcon" class="pi pi-moon"></i>
+                <span id="themeLabel">Modo Escuro</span>
+            </button>
+            <h:form style="margin:0;">
+                <p:commandButton value="Sair" icon="pi pi-sign-out"
+                                 action="#{loginBean.deslogar}"
+                                 ajax="false"
+                                 styleClass="ui-button-secondary"/>
+            </h:form>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-container">
+        <div class="page-header">
+            <h1>Quadro de Aulas e Localização</h1>
+            <p>Consulte os horários, disciplinas, professores e o local exato das suas aulas.</p>
+        </div>
+
+        <h:form id="formAluno">
+            <!-- 3 Cards de Resumo -->
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div>
+                        <span class="summary-label">Aulas Programadas</span>
+                        <span class="summary-value">#{alunoBean.totalAulasAtivas}</span>
+                    </div>
+                    <div class="summary-icon">
+                        <i class="pi pi-calendar"></i>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div>
+                        <span class="summary-label">Aulas em Sala Teórica</span>
+                        <span class="summary-value">#{alunoBean.totalAulasTeoricas}</span>
+                    </div>
+                    <div class="summary-icon">
+                        <i class="pi pi-book"></i>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div>
+                        <span class="summary-label">Aulas em Laboratório</span>
+                        <span class="summary-value">#{alunoBean.totalAulasLaboratorio}</span>
+                    </div>
+                    <div class="summary-icon">
+                        <i class="pi pi-desktop"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Principal: Quadro de Aulas -->
+            <div class="card">
+                <div class="filter-bar">
+                    <span class="ui-input-icon-left" style="flex: 1; min-width: 240px;">
+                        <i class="pi pi-search" style="color: var(--sla-green-dark);"></i>
+                        <p:inputText value="#{alunoBean.filtroBusca}"
+                                     style="width: 100%;"
+                                     placeholder="Buscar por disciplina, código, professor ou sala...">
+                            <p:ajax event="keyup" delay="300" update="tabelaAulasAluno"/>
+                        </p:inputText>
+                    </span>
+
+                    <p:selectOneMenu value="#{alunoBean.filtroDiaSemana}">
+                        <f:selectItem itemLabel="Todos os Dias" itemValue=""/>
+                        <f:selectItem itemLabel="Segunda-feira" itemValue="SEGUNDA"/>
+                        <f:selectItem itemLabel="Terça-feira" itemValue="TERCA"/>
+                        <f:selectItem itemLabel="Quarta-feira" itemValue="QUARTA"/>
+                        <f:selectItem itemLabel="Quinta-feira" itemValue="QUINTA"/>
+                        <f:selectItem itemLabel="Sexta-feira" itemValue="SEXTA"/>
+                        <p:ajax update="tabelaAulasAluno"/>
+                    </p:selectOneMenu>
+
+                    <p:selectOneMenu value="#{alunoBean.filtroBloco}">
+                        <f:selectItem itemLabel="Todos os Blocos" itemValue=""/>
+                        <f:selectItems value="#{alunoBean.blocosComAula}" var="bloco"
+                                       itemLabel="Bloco #{bloco}" itemValue="#{bloco}"/>
+                        <p:ajax update="tabelaAulasAluno"/>
+                    </p:selectOneMenu>
+
+                    <p:selectOneMenu value="#{alunoBean.filtroTipo}">
+                        <f:selectItem itemLabel="Todos os Ambientes" itemValue=""/>
+                        <f:selectItem itemLabel="Sala Teórica" itemValue="TEORICA"/>
+                        <f:selectItem itemLabel="Laboratório" itemValue="LABORATORIO"/>
+                        <p:ajax update="tabelaAulasAluno"/>
+                    </p:selectOneMenu>
+
+                    <p:commandButton value="Limpar Filtros" icon="pi pi-filter-slash"
+                                     action="#{alunoBean.limparFiltros}"
+                                     process="@this"
+                                     update="formAluno"
+                                     styleClass="ui-button-outlined ui-button-success"/>
+                </div>
+
+                <div class="table-responsive">
+                    <p:dataTable id="tabelaAulasAluno" value="#{alunoBean.aulasFiltradas}" var="aloc"
+                                 emptyMessage="Nenhuma aula encontrada com os filtros informados.">
+                        <p:column headerText="Disciplina">
+                            <div><strong>#{aloc.disciplinaNome}</strong></div>
+                            <small style="color: var(--text-muted);">Código: #{aloc.disciplinaCodigo}</small>
+                        </p:column>
+
+                        <p:column headerText="Professor">
+                            <span style="display: inline-flex; align-items: center; gap: 0.4rem;">
+                                <i class="pi pi-user" style="color: var(--sla-green); font-size: 0.85rem;"></i>
+                                #{aloc.usuarioNome}
+                            </span>
+                        </p:column>
+
+                        <p:column headerText="Dia e Horário">
+                            <div><strong>#{aloc.diaSemana}</strong></div>
+                            <small style="color: var(--text-muted);">
+                                <i class="pi pi-clock" style="font-size: 0.75rem; color: var(--sla-green);"></i>
+                                #{aloc.horario}
+                            </small>
+                        </p:column>
+
+                        <p:column headerText="Localização">
+                            <span class="loc-pill">
+                                <i class="pi pi-map-marker"></i>
+                                Sala #{aloc.salaNumero} — Bloco #{aloc.salaBloco}
+                            </span>
+                        </p:column>
+
+                        <p:column headerText="Ambiente">
+                            <span class="badge-tipo #{aloc.salaTipo eq 'LABORATORIO' ? 'badge-lab' : 'badge-teorica'}">
+                                <i class="#{aloc.salaTipo eq 'LABORATORIO' ? 'pi pi-desktop' : 'pi pi-book'}"></i>
+                                #{aloc.salaTipoFormatado}
+                            </span>
+                        </p:column>
+
+                        <p:column headerText="Ações" style="text-align: center;">
+                            <p:commandButton value="Ver Detalhes" icon="pi pi-info-circle"
+                                             action="#{alunoBean.verDetalhesAula(aloc)}"
+                                             process="@this"
+                                             update=":formDetalhesAluno"
+                                             oncomplete="PF('dlgDetalhesAluno').show()"
+                                             styleClass="btn-green-outline"/>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </h:form>
+    </main>
+
+    <!-- Modal: Detalhes da Aula -->
+    <p:dialog header="Informações da Aula" widgetVar="dlgDetalhesAluno" modal="true"
+              resizable="false" width="460" closeOnEscape="true">
+        <h:form id="formDetalhesAluno">
+            <h:panelGroup rendered="#{alunoBean.aulaDetalhes != null}">
+                <div class="detail-list">
+                    <div class="detail-item">
+                        <span>Disciplina</span>
+                        <strong>#{alunoBean.aulaDetalhes.disciplinaNome} (#{alunoBean.aulaDetalhes.disciplinaCodigo})</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Professor</span>
+                        <strong>#{alunoBean.aulaDetalhes.usuarioNome}</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Dia da Semana</span>
+                        <strong>#{alunoBean.aulaDetalhes.diaSemana}</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Horário</span>
+                        <strong>#{alunoBean.aulaDetalhes.horario}</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Local</span>
+                        <strong style="color: var(--sla-green-dark);">
+                            Sala #{alunoBean.aulaDetalhes.salaNumero} — Bloco #{alunoBean.aulaDetalhes.salaBloco}
+                        </strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Ambiente</span>
+                        <strong>#{alunoBean.aulaDetalhes.salaTipoFormatado}</strong>
+                    </div>
+                </div>
+                <div class="dialog-footer" style="margin-top: 1.25rem; text-align: right;">
+                    <p:commandButton value="Fechar" type="button"
+                                     icon="pi pi-check"
+                                     styleClass="ui-button-success"
+                                     onclick="PF('dlgDetalhesAluno').hide()"/>
+                </div>
+            </h:panelGroup>
+        </h:form>
+    </p:dialog>
+</h:body>
+</html>
