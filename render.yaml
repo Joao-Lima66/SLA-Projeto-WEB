@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: sla-projeto-web
-    env: docker
-    region: oregon
-    plan: free
-    buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -jar target/*.jar
