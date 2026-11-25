@@ -1,3 +1,4 @@
+
 package com.sistema.sla.dao;
 
 import java.sql.Connection;
@@ -33,7 +34,7 @@ public class AlocacaoDao {
                 INNER JOIN salas s ON a.sala_id = s.id
                 INNER JOIN disciplinas d ON a.disciplina_id = d.id
                 INNER JOIN usuarios u ON a.usuario_id = u.id
-                WHERE a.ativa = 1
+                WHERE a.ativa = TRUE
                 ORDER BY a.id DESC
                 """;
         return executarConsulta(sql, null);
@@ -54,7 +55,7 @@ public class AlocacaoDao {
                 INNER JOIN salas s ON a.sala_id = s.id
                 INNER JOIN disciplinas d ON a.disciplina_id = d.id
                 INNER JOIN usuarios u ON a.usuario_id = u.id
-                WHERE a.usuario_id = ? AND a.ativa = 1
+                WHERE a.usuario_id = ? AND a.ativa = TRUE
                 ORDER BY a.id DESC
                 """;
         return executarConsulta(sql, usuarioId);
@@ -71,29 +72,38 @@ public class AlocacaoDao {
                 INNER JOIN salas s ON a.sala_id = s.id
                 INNER JOIN disciplinas d ON a.disciplina_id = d.id
                 INNER JOIN usuarios u ON a.usuario_id = u.id
-                WHERE a.sala_id = ? AND a.ativa = 1
+                WHERE a.sala_id = ? AND a.ativa = TRUE
                 ORDER BY a.id DESC
                 """;
         return executarConsulta(sql, salaId);
     }
 
-    public void reservarSala(int salaId, int disciplinaId, int usuarioId, String diaSemana, String horario) {
+    public void reservarSala(int salaId, int disciplinaId, int usuarioId,
+                             String diaSemana, String horario) {
+
         String sqlInsert = """
-                INSERT INTO alocacoes (sala_id, disciplina_id, usuario_id, dia_semana, horario, ativa)
-                VALUES (?, ?, ?, ?, ?, 1)
+                INSERT INTO alocacoes
+                (sala_id, disciplina_id, usuario_id, dia_semana, horario, ativa)
+                VALUES (?, ?, ?, ?, ?, TRUE)
                 """;
-        String sqlUpdateSala = "UPDATE salas SET status = 'OCUPADA' WHERE id = ? AND status = 'DISPONIVEL'";
+
+        String sqlUpdateSala =
+                "UPDATE salas SET status = 'OCUPADA' WHERE id = ? AND status = 'DISPONIVEL'";
 
         try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
+
             try (PreparedStatement psSala = conn.prepareStatement(sqlUpdateSala);
                  PreparedStatement psInsert = conn.prepareStatement(sqlInsert)) {
 
                 psSala.setInt(1, salaId);
+
                 int atualizadas = psSala.executeUpdate();
+
                 if (atualizadas == 0) {
                     conn.rollback();
-                    throw new IllegalStateException("Esta sala já foi ocupada por outro usuário.");
+                    throw new IllegalStateException(
+                            "Esta sala já foi ocupada por outro usuário.");
                 }
 
                 psInsert.setInt(1, salaId);
@@ -101,26 +111,35 @@ public class AlocacaoDao {
                 psInsert.setInt(3, usuarioId);
                 psInsert.setString(4, diaSemana);
                 psInsert.setString(5, horario);
+
                 psInsert.executeUpdate();
 
                 conn.commit();
+
             } catch (Exception ex) {
                 conn.rollback();
                 throw ex;
+
             } finally {
                 conn.setAutoCommit(true);
             }
+
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao reservar sala: " + e.getMessage(), e);
+            throw new RuntimeException(
+                    "Erro ao reservar sala: " + e.getMessage(), e);
         }
     }
 
-    public void atualizar(Integer id, Integer salaId, Integer disciplinaId, Integer usuarioId, String diaSemana, String horario) {
+    public void atualizar(Integer id, Integer salaId, Integer disciplinaId,
+                          Integer usuarioId, String diaSemana, String horario) {
+
         String sqlUpdate = """
                 UPDATE alocacoes
-                SET sala_id = ?, disciplina_id = ?, usuario_id = ?, dia_semana = ?, horario = ?
+                SET sala_id = ?, disciplina_id = ?, usuario_id = ?,
+                    dia_semana = ?, horario = ?
                 WHERE id = ?
                 """;
+
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sqlUpdate)) {
 
@@ -130,23 +149,37 @@ public class AlocacaoDao {
             ps.setString(4, diaSemana);
             ps.setString(5, horario);
             ps.setInt(6, id);
+
             ps.executeUpdate();
+
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao atualizar alocação: " + e.getMessage(), e);
+            throw new RuntimeException(
+                    "Erro ao atualizar alocação: " + e.getMessage(), e);
         }
     }
 
     public void liberarSala(int alocacaoId) {
-        String sqlBuscarSala = "SELECT sala_id FROM alocacoes WHERE id = ?";
-        String sqlDesativar = "UPDATE alocacoes SET ativa = 0 WHERE id = ?";
-        String sqlLiberarSala = "UPDATE salas SET status = 'DISPONIVEL' WHERE id = ?";
+
+        String sqlBuscarSala =
+                "SELECT sala_id FROM alocacoes WHERE id = ?";
+
+        String sqlDesativar =
+                "UPDATE alocacoes SET ativa = FALSE WHERE id = ?";
+
+        String sqlLiberarSala =
+                "UPDATE salas SET status = 'DISPONIVEL' WHERE id = ?";
 
         try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
+
             try {
                 Integer salaId = null;
-                try (PreparedStatement psBusca = conn.prepareStatement(sqlBuscarSala)) {
+
+                try (PreparedStatement psBusca =
+                             conn.prepareStatement(sqlBuscarSala)) {
+
                     psBusca.setInt(1, alocacaoId);
+
                     try (ResultSet rs = psBusca.executeQuery()) {
                         if (rs.next()) {
                             salaId = rs.getInt("sala_id");
@@ -154,56 +187,78 @@ public class AlocacaoDao {
                     }
                 }
 
-                try (PreparedStatement psDesativa = conn.prepareStatement(sqlDesativar)) {
+                try (PreparedStatement psDesativa =
+                             conn.prepareStatement(sqlDesativar)) {
+
                     psDesativa.setInt(1, alocacaoId);
                     psDesativa.executeUpdate();
                 }
 
                 if (salaId != null) {
-                    try (PreparedStatement psLibera = conn.prepareStatement(sqlLiberarSala)) {
+                    try (PreparedStatement psLibera =
+                                 conn.prepareStatement(sqlLiberarSala)) {
+
                         psLibera.setInt(1, salaId);
                         psLibera.executeUpdate();
                     }
                 }
 
                 conn.commit();
+
             } catch (Exception ex) {
                 conn.rollback();
                 throw ex;
+
             } finally {
                 conn.setAutoCommit(true);
             }
+
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao liberar sala: " + e.getMessage(), e);
+            throw new RuntimeException(
+                    "Erro ao liberar sala: " + e.getMessage(), e);
         }
     }
 
     public void deletar(Integer alocacaoId) {
+
         if (alocacaoId == null) {
             return;
         }
+
         liberarSala(alocacaoId);
-        String sqlDelete = "DELETE FROM alocacoes WHERE id = ?";
+
+        String sqlDelete =
+                "DELETE FROM alocacoes WHERE id = ?";
+
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sqlDelete)) {
+
             ps.setInt(1, alocacaoId);
             ps.executeUpdate();
+
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao deletar alocação: " + e.getMessage(), e);
+            throw new RuntimeException(
+                    "Erro ao deletar alocação: " + e.getMessage(), e);
         }
     }
 
     private List<Alocacao> executarConsulta(String sql, Integer parametro) {
+
         List<Alocacao> lista = new ArrayList<>();
+
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             if (parametro != null) {
                 ps.setInt(1, parametro);
             }
+
             try (ResultSet rs = ps.executeQuery()) {
+
                 while (rs.next()) {
+
                     Alocacao a = new Alocacao();
+
                     a.setId(rs.getInt("id"));
                     a.setSalaId(rs.getInt("sala_id"));
                     a.setDisciplinaId(rs.getInt("disciplina_id"));
@@ -211,18 +266,25 @@ public class AlocacaoDao {
                     a.setDiaSemana(rs.getString("dia_semana"));
                     a.setHorario(rs.getString("horario"));
                     a.setAtiva(rs.getBoolean("ativa"));
+
                     a.setSalaNumero(rs.getString("sala_numero"));
                     a.setSalaBloco(rs.getString("sala_bloco"));
                     a.setSalaTipo(rs.getString("sala_tipo"));
+
                     a.setDisciplinaNome(rs.getString("disciplina_nome"));
                     a.setDisciplinaCodigo(rs.getString("disciplina_codigo"));
+
                     a.setUsuarioNome(rs.getString("usuario_nome"));
+
                     lista.add(a);
                 }
             }
+
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao consultar alocações: " + e.getMessage(), e);
+            throw new RuntimeException(
+                    "Erro ao consultar alocações: " + e.getMessage(), e);
         }
+
         return lista;
     }
 }
