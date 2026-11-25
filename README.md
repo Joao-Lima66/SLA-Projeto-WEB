@@ -47,3 +47,21 @@ As principais tabelas são:
 - `sala`: armazena as informações das salas e laboratórios.
 - `disciplina`: armazena as disciplinas cadastradas.
 - `alocacao`: relaciona usuários, disciplinas, salas e horários.
+
+## Acesso ao Sistema
+
+O sistema está disponível online por meio do Render.
+
+**Link de acesso:** https://sla-projeto-web-1-crm9.onrender.com
+
+### Credenciais de acesso
+
+Para testar as funcionalidades, utilize as contas disponibilizadas abaixo:
+
+| Perfil | Usuário (e-mail ou matrícula) | Senha |
+|---|---|---|
+| Aluno | 2023001 | 123456 |
+| Professor | P001 | 123456 |
+| Coordenadora | C001 | 123456 |
+
+**Observação:** As credenciais acima são destinadas à avaliação e demonstração do projeto.
